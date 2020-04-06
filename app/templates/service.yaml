@@ -1,0 +1,23 @@
+{{- if and .Values.server.enabled .Values.service.enabled -}}
+{{- $name := .Release.Name -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "app.labels" . | nindent 4 }}
+  {{- with .Values.service.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    name: {{ include "server.name" . }}
+    env: {{ .Values.meta.env }}
+{{- end }}

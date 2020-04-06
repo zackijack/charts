@@ -1,0 +1,42 @@
+{{- if and .Values.server.enabled .Values.service.enabled .Values.ingress.enabled -}}
+{{- $name := .Release.Name -}}
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "app.labels" . | nindent 4 }}
+  annotations:
+    {{- if and .Values.ingress.tls .Values.ingress.issuer }}
+    cert-manager.io/cluster-issuer: {{ .Values.ingress.issuer }}
+    {{- end }}
+    {{- with .Values.ingress.class }}
+    kubernetes.io/ingress.class: {{ . | quote }}
+    {{- end }}
+    {{- with .Values.ingress.annotations }}
+      {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  {{- if .Values.ingress.tls }}
+  tls:
+    {{- range .Values.ingress.tls }}
+    - hosts:
+      {{- range .hosts }}
+        - {{ . | quote }}
+      {{- end }}
+      secretName: {{ $name }}
+    {{- end }}
+  {{- end }}
+  rules:
+    {{- range .Values.ingress.hosts }}
+    - host: {{ .host | quote }}
+      http:
+        paths:
+          {{- range .paths }}
+          - path: {{ . }}
+            backend:
+              serviceName: {{ $name }}
+              servicePort: http
+          {{- end }}
+    {{- end }}
+{{- end }}

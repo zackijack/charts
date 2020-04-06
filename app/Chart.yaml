@@ -1,0 +1,11 @@
+apiVersion: v2
+name: app
+description: A Helm chart for general app
+
+type: application
+
+version: 0.1.0
+
+home: https://github.com/zackijack/charts
+sources:
+  - https://github.com/zackijack/charts
