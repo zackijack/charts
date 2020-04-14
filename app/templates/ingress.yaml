@@ -8,7 +8,11 @@ metadata:
     {{- include "app.labels" . | nindent 4 }}
   annotations:
     {{- if and .Values.ingress.tls .Values.ingress.issuer }}
-    cert-manager.io/cluster-issuer: {{ .Values.ingress.issuer }}
+    {{- if .Values.ingress.issuer.namespaced }}
+    cert-manager.io/issuer: {{ .Values.ingress.issuer.name }}
+    {{- else }}
+    cert-manager.io/cluster-issuer: {{ .Values.ingress.issuer.name }}
+    {{- end }}
     {{- end }}
     {{- with .Values.ingress.class }}
     kubernetes.io/ingress.class: {{ . | quote }}

@@ -159,7 +159,9 @@ ingress:
 
   hosts: []
 
-  issuer: letsencrypt
+  issuer:
+    name: letsencrypt
+    namespaced: false
 
 virtualService:
   enabled: false
